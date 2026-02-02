@@ -87,7 +87,7 @@ def train(args):
         pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{args.epochs} [Train]")
         train_loss = 0.0
 
-        for batch in pbar:
+        for batch_idx, batch in enumerate(pbar):
             x_hr = batch['hr'].to(device)
             x_lr = batch['lr'].to(device)
 
@@ -109,6 +109,12 @@ def train(args):
             ema.update(model)
 
             train_loss += loss.item()
+            
+            # Log every 100 steps
+            global_step = epoch * len(train_loader) + batch_idx
+            if global_step % 100 == 0:
+                print(f"Step {global_step}: Loss = {loss.item():.6f}, LR = {scheduler.get_last_lr()[0]:.8f}")
+                
             pbar.set_postfix({'loss': loss.item(), 'lr': scheduler.get_last_lr()[0]})
 
         avg_train_loss = train_loss / len(train_loader)
