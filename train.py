@@ -260,7 +260,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--gamma",
         type=float,
-        default=0.9999,
+        default=0.999995,
         help="Exponential LR decay gamma per step",
     )
     parser.add_argument(
@@ -273,7 +273,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--timesteps", type=int, default=1000, help="Diffusion timesteps"
     )
-    parser.add_argument("--epochs", type=int, default=1000, help="Number of epochs")
+    parser.add_argument("--epochs", type=int, default=10000, help="Number of epochs")
     parser.add_argument(
         "--save_dir",
         type=str,
