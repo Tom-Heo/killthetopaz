@@ -141,6 +141,20 @@ def train(args):
             if global_step % 100 == 0:
                 print(f"Step {global_step}: Loss = {loss.item():.6f}, LR = {scheduler.get_last_lr()[0]:.8f}")
                 
+            # Save Checkpoint every 1000 steps
+            if global_step > 0 and global_step % 1000 == 0:
+                step_save_path = os.path.join(args.save_dir, f"bake_step_{global_step}.pth")
+                torch.save({
+                    'epoch': epoch,
+                    'step': global_step,
+                    'model_state_dict': model.state_dict(),
+                    'ema_state_dict': ema.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'scheduler_state_dict': scheduler.state_dict(),
+                    'loss': loss.item(),
+                }, step_save_path)
+                print(f"Checkpoint saved to {step_save_path}")
+                
             pbar.set_postfix({'loss': loss.item(), 'lr': scheduler.get_last_lr()[0]})
 
         avg_train_loss = train_loss / len(train_loader)
@@ -187,7 +201,7 @@ def train(args):
             }, best_path)
             print(f"New best model saved to {best_path} (Valid Loss: {best_loss:.6f})")
 
-        # Save Interval
+        # Save Interval (Epoch based - kept for backward compatibility or if preferred)
         if (epoch + 1) % args.save_interval == 0:
             save_path = os.path.join(args.save_dir, f"bake_epoch_{epoch+1}.pth")
             torch.save({
@@ -199,7 +213,7 @@ def train(args):
                 'loss': avg_train_loss,
                 'valid_loss': avg_valid_loss,
             }, save_path)
-            print(f"Checkpoint saved to {save_path}")
+            print(f"Epoch Checkpoint saved to {save_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train BakeNet on DIV2K")
