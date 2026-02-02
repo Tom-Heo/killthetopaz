@@ -352,7 +352,7 @@ class Heo:
         def __init__(self, dim: int):
             super().__init__()
 
-            self.conv0 = nn.Conv2d(dim, dim, 3, 1)
+            self.conv0 = nn.Conv2d(dim, dim, 3, 1, 1) # Padding added
             self.conv1 = nn.Conv2d(dim, dim, 1, 0)
             self.conv2 = nn.Conv2d(dim, dim, 1, 0)
             self.conv3 = nn.Conv2d(dim, dim, 1, 0)
