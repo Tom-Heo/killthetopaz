@@ -11,6 +11,8 @@ BakeNet은 Oklab 색공간을 활용하여 손실된 색 정보를 복원하고 
 git clone https://github.com/Tom-Heo/killthetopaz.git
 cd killthetopaz
 bash setup.sh
+bash download_data.sh
+python train.py --data_root ./data
 ```
 
 ### 2. 데이터셋 준비 (DIV2K)
@@ -28,6 +30,7 @@ bash download_data.sh
 
 처음부터 학습을 시작합니다:
 ```bash
+git pull
 python train.py --data_root ./data
 ```
 
