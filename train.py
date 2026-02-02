@@ -218,7 +218,7 @@ def train(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train BakeNet on DIV2K")
     parser.add_argument('--data_root', type=str, default='./data', help='Path to DIV2K root directory')
-    parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
+    parser.add_argument('--batch_size', type=int, default=4, help='Batch size')
     parser.add_argument('--crop_size', type=int, default=128, help='Random crop size')
     parser.add_argument('--lr', type=float, default=1e-4, help='Learning rate')
     parser.add_argument('--weight_decay', type=float, default=1e-6, help='Weight decay')
