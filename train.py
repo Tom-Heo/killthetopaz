@@ -82,6 +82,32 @@ def train(args):
     os.makedirs(args.save_dir, exist_ok=True)
     best_loss = float('inf')
 
+    # Resume from checkpoint if specified
+    if args.resume:
+        if os.path.isfile(args.resume):
+            print(f"Loading checkpoint from {args.resume}")
+            checkpoint = torch.load(args.resume, map_location=device)
+            
+            start_epoch = checkpoint['epoch'] + 1
+            model.load_state_dict(checkpoint['model_state_dict'])
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+            
+            if 'ema_state_dict' in checkpoint:
+                ema.load_state_dict(checkpoint['ema_state_dict'])
+            
+            if 'loss' in checkpoint:
+                # If resuming from best model, we might want to keep track of that best loss
+                # But usually we resume from 'last', so we might not know the absolute best loss unless stored separately.
+                # However, if we just want to continue training, this is fine. 
+                # If we resume from 'best', current loss is best.
+                # Let's just trust the loop to find new bests.
+                pass
+            
+            print(f"Resumed training from epoch {start_epoch}")
+        else:
+            print(f"No checkpoint found at {args.resume}, starting from scratch.")
+
     for epoch in range(start_epoch, args.epochs):
         model.train()
         pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{args.epochs} [Train]")
@@ -189,6 +215,7 @@ if __name__ == "__main__":
     parser.add_argument('--epochs', type=int, default=100, help='Number of epochs')
     parser.add_argument('--save_dir', type=str, default='./checkpoints', help='Directory to save checkpoints')
     parser.add_argument('--save_interval', type=int, default=10, help='Save interval in epochs')
+    parser.add_argument('--resume', type=str, default=None, help='Path to checkpoint to resume from')
 
     args = parser.parse_args()
     train(args)
