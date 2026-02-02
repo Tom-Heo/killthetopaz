@@ -3,6 +3,7 @@ import glob
 from PIL import Image
 import torch
 from torch.utils.data import Dataset
+import torchvision.transforms as transforms
 import torchvision.transforms.functional as TF
 from heo import Heo
 
@@ -44,7 +45,7 @@ class DIV2KDataset(Dataset):
                 # Resize if too small (rare for DIV2K but safe)
                 hr_img = TF.resize(hr_img, self.crop_size)
             
-            i, j, h, w = TF.RandomCrop.get_params(
+            i, j, h, w = transforms.RandomCrop.get_params(
                 hr_img, output_size=(self.crop_size, self.crop_size)
             )
             hr_img = TF.crop(hr_img, i, j, h, w)
