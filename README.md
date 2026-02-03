@@ -42,6 +42,7 @@ python train.py --data_root ./data
 **학습 재개 (Resume):**
 저장된 체크포인트에서 학습을 이어가려면:
 ```bash
+git pull
 python train.py --data_root ./data --resume checkpoints/bake_last.pth
 ```
 
