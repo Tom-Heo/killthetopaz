@@ -52,6 +52,10 @@ python train.py --data_root ./data --resume checkpoints/bake_last.pth
 
 **단일 이미지:**
 ```bash
+git clone https://github.com/Tom-Heo/killthetopaz.git
+cd killthetopaz
+bash setup.sh
+git pull
 python inference.py --input "test.png" --checkpoint "checkpoints/bake_best.pth" --pre_upsample
 ```
 
