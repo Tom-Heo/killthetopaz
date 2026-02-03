@@ -352,7 +352,7 @@ class Heo:
         def __init__(self, dim: int):
             super().__init__()
 
-            self.conv0 = nn.Conv2d(dim, dim, 3, 1, 1) # Padding added
+            self.conv0 = nn.Conv2d(dim, dim, 3, 1, 1)  # Padding added
             self.conv1 = nn.Conv2d(dim, dim, 1, 1)
             self.conv2 = nn.Conv2d(dim, dim, 1, 1)
             self.conv3 = nn.Conv2d(dim, dim, 1, 1)
@@ -427,7 +427,7 @@ class Heo:
 
             # 1. Loss Function 설정
             self.criterion = Heo.BakeLoss(epsilon=loss_epsilon)
-            
+
             # 2. BakedColor Converter
             self.to_baked = Heo.OklabtoBakedColor()
 
@@ -452,16 +452,18 @@ class Heo:
             # 샘플링용 계수: Posterior Mean coefficients
             # mu_t = coef1 * x_0 + coef2 * x_t
             alphas_cumprod_prev = F.pad(alphas_cumprod[:-1], (1, 0), value=1.0)
-            
+
             self.register_buffer(
                 "posterior_mean_coef1",
                 betas * torch.sqrt(alphas_cumprod_prev) / (1.0 - alphas_cumprod),
             )
             self.register_buffer(
                 "posterior_mean_coef2",
-                (1.0 - alphas_cumprod_prev) * torch.sqrt(alphas) / (1.0 - alphas_cumprod),
+                (1.0 - alphas_cumprod_prev)
+                * torch.sqrt(alphas)
+                / (1.0 - alphas_cumprod),
             )
-            
+
             self.register_buffer(
                 "posterior_variance",
                 betas * (1.0 - alphas_cumprod_prev) / (1.0 - alphas_cumprod),
@@ -508,7 +510,7 @@ class Heo:
             # x0_pred와 x_hr을 BakedColor 공간으로 변환
             pred_baked = self.to_baked(x0_pred)
             target_baked = self.to_baked(x_hr)
-            
+
             loss = self.criterion(pred_baked, target_baked)
             return loss
 
@@ -535,13 +537,13 @@ class Heo:
 
                 # x_0 예측
                 x0_pred = self.network(img, x_lr, t)
-                
+
                 # Posterior Mean 계산
                 coef1 = self.posterior_mean_coef1[t][:, None, None, None]
                 coef2 = self.posterior_mean_coef2[t][:, None, None, None]
-                
+
                 mean = coef1 * x0_pred + coef2 * img
-                
+
                 # 분산 추가 (마지막 단계 제외)
                 if i > 0:
                     noise = torch.randn_like(img)
@@ -619,26 +621,24 @@ class Heo:
             super().__init__()
             self.head = nn.Conv2d(in_channels, dim, 3, 1, 1)
             self.lr_encoder = nn.Conv2d(in_channels, dim, 3, 1, 1)
-            
-            self.body = nn.ModuleList([
-                Heo.BakeBlock(dim) for _ in range(num_blocks)
-            ])
-            
+
+            self.body = nn.ModuleList([Heo.BakeBlock(dim) for _ in range(num_blocks)])
+
             self.tail = nn.Conv2d(dim, in_channels, 3, 1, 1)
-            
+
         def forward(self, x, x_lr, time):
             # x: Noisy Image (B, 3, H, W)
             # x_lr: Condition Image (B, 3, H, W) - Same resolution as x
             # time: Timestep (B,)
-            
+
             # 1. Feature Extraction
-            features = self.lr_encoder(x_lr) # (B, 96, H, W)
-            h = self.head(x)                 # (B, 96, H, W)
-            
+            features = self.lr_encoder(x_lr)  # (B, 96, H, W)
+            h = self.head(x)  # (B, 96, H, W)
+
             # 2. Body Processing
             for block in self.body:
                 h = block(h, features, time)
-                
+
             # 3. Output
             out = self.tail(h)
             return out
