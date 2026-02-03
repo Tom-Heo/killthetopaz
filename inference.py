@@ -25,7 +25,7 @@ def inference(args):
     print(f"Loading checkpoint from {args.checkpoint}...")
 
     # 1. VRAM 아끼기 위해 일단 CPU로 부릅니다 (안전 제일)
-    checkpoint = torch.load(args.checkpoint, map_location="cpu")
+    checkpoint = torch.load(args.checkpoint, map_location="cuda")
 
     if "ema_state_dict" in checkpoint:
         print("Loading EMA state dict...")
